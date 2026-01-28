@@ -12,8 +12,8 @@ fake_bd=[{"id":1,"company":"Andela Rwanda","role":"Web  developer","start_date":
 
 
 @router.post('/',response_model=dict)
-async def create_experience(experience:ExperienceCreate,session:sessionDep):
-   new_experience= await create_experience_service (session=session,experience=experience)
+def create_experience(experience:ExperienceCreate,session:sessionDep):
+   new_experience= create_experience_service (session=session,experience=experience)
    return {"message":"Record create successfully!","data":new_experience}
     
 

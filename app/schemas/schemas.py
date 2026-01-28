@@ -1,9 +1,10 @@
-from sqlmodel import SQLModel, Field
-from pydantic import PastDate,EmailStr
-from typing import TypedDict
+from sqlmodel import SQLModel, Field,Column,JSON
+from pydantic import EmailStr,BaseModel
+from datetime  import date,datetime
+from typing import Annotated
 from app.db.db_config import engine
 
-class Address(TypedDict):
+class Address(BaseModel):
     country:str
     city:str
     phone:str
@@ -14,7 +15,7 @@ class ProfileBase(SQLModel):
     email:EmailStr
     full_name:str =Field(max_length=255,min_length=20)
     image_url:str
-    address:Address
+    address:Annotated[Address,"Addrred of the user"]
 
 
 class ProjectBase(SQLModel):
@@ -26,23 +27,11 @@ class ProjectBase(SQLModel):
 class ExperienceBase(SQLModel):
     role:str =Field(max_length=255,min_length=2)
     organization:str=Field(max_length=255,min_length=2)
-    start_date:PastDate =Field(description='Starting date of the work')
-    end_date:PastDate |None =None
-    tasks:list[str]
+    start_date:date =Field(description='Starting date of the work')
+    end_date:date |None =None
+    tasks:list[str]=Field(description="A list of tasks carried out!")
 
 
-#Database models
-
-class ProjectDB(ProjectBase, table=True):
-    id: int|None =Field(default=None,primary_key=True)
-    
-
-class ExperienceDB(ExperienceBase,table=True):
-    id:int|None=Field(default=None,primary_key=True)
-    
-
-class ProfileDB (ProfileBase,table=True):
-    id:int|None =Field(default=None,primary_key=True)
 
 
     # Schema for data creation
