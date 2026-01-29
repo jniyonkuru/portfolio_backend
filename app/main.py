@@ -1,9 +1,9 @@
 from fastapi import HTTPException,FastAPI,Request
 from fastapi.responses import JSONResponse
-from .api.v1.endpoints import experiences
+from app.api.v1.endpoints import experiences
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
-from .db.db_config import create_db_and_tables
+from app.db.db_config import create_db_and_tables
 import logging
 
 
