@@ -4,16 +4,16 @@ from  app.dependencies import SessionDep,create_experience_repo
 from  app.models.models import Experience
 from app.schemas.schemas import ExperienceCreate
 from typing import Annotated
-from app.repositories.base_repository import BaseRepository
+from app.repositories.base_repository import ExperienceRepository
 from app.services.experience_services import create_experience_service
 router=APIRouter(
     prefix='/api/v1/experiences',
     tags=["Experience"],
     responses={404:{"description":"Not found"}}
 )
-ExperienceRepoDeps=Annotated[BaseRepository[Experience],Depends(create_experience_repo)]
+ExperienceRepoDeps=Annotated[ExperienceRepository,Depends(create_experience_repo)]
 
-@router.post("/" ,response_model=Experience)
+@router.post("/" )
 async def  create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps):
     try :
       new_experience= create_experience_service(experience=experience,experience_repo=repo)
