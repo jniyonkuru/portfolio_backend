@@ -3,6 +3,7 @@ from pydantic import EmailStr,BaseModel
 from datetime  import date,datetime
 from typing import Annotated
 from app.db.db_config import engine
+from app.utils.pydantic_utils import make_fields_optional
 
 class Address(BaseModel):
     country:str
@@ -34,7 +35,7 @@ class ExperienceBase(SQLModel):
 
 
 
-    # Schema for data creation
+    # Schemas for data creation
 class ProfileCreate(ProfileBase):
     pass
 class ProjectCreate(ProjectBase):
@@ -42,3 +43,11 @@ class ProjectCreate(ProjectBase):
 class ExperienceCreate(ExperienceBase):
     pass
 
+# Schema for data updating 
+ExperienceOptionalFields=make_fields_optional(model_cls=ExperienceBase,new_model_name="ExperienceUpdate")
+ProjectUpdate=make_fields_optional(model_cls=ProfileBase,new_model_name="ProjectUpdate")
+ProfileUpdate=make_fields_optional(model_cls=ProfileBase,new_model_name="ProfileUpdate")
+
+
+class ExperienceUpdate(ExperienceOptionalFields):
+    pass

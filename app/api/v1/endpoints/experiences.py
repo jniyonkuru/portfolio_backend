@@ -5,23 +5,34 @@ from  app.models.models import Experience
 from app.schemas.schemas import ExperienceCreate
 from typing import Annotated
 from app.repositories.base_repository import ExperienceRepository
-from app.services.experience_services import create_experience_service
+from app.services.experience_services import create_experience_service,get_experience_by_id_service,get_list_of_experiences_service,update_experience_service
+from app.dependencies import ExperienceRepoDeps
 router=APIRouter(
     prefix='/api/v1/experiences',
     tags=["Experience"],
     responses={404:{"description":"Not found"}}
 )
-ExperienceRepoDeps=Annotated[ExperienceRepository,Depends(create_experience_repo)]
+
 
 @router.post("/" )
-async def  create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps):
-    try :
-      new_experience= create_experience_service(experience=experience,experience_repo=repo)
-      return new_experience
-    except HTTPException:
-       raise
-    except Exception as e:
-       raise  HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=str(e))
+async def create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps):
+    
+     return create_experience_service(experience=experience,experience_repo=repo)
+      
+    
+@router.get("/{id}",response_model=Experience)
+async def get_experience (id:int,repo:ExperienceRepoDeps):
+    return get_experience_by_id_service(id,repo)
+   
+   
+@router.get("/",response_model=list[Experience])
+async def get_experiences(repo:ExperienceRepoDeps):
+   return  get_list_of_experiences_service(experience_repo=repo)
+
+@router.delete("/{id}")
+async def  delete_experience (id:int,repo:ExperienceRepoDeps):
+    return delete_experience(id=id ,repo=repo)
+   
 
 
 

@@ -19,3 +19,5 @@ def common_parameters(query:str|None=None,skip:int=0,limit:int=0):
     return {"q":query,"skip":skip,"limit":limit}
 
 CommonDep=Annotated[dict,Depends(common_parameters)]
+
+ExperienceRepoDeps=Annotated[ExperienceRepository,Depends(create_experience_repo)]
