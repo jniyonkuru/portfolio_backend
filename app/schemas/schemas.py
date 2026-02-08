@@ -4,6 +4,7 @@ from datetime  import date,datetime
 from typing import Annotated
 from app.db.db_config import engine
 from app.utils.pydantic_utils import make_fields_optional
+from fastapi import Form,UploadFile,File
 
 class Address(BaseModel):
     country:str
@@ -16,13 +17,15 @@ class ProfileBase(SQLModel):
     email:EmailStr
     full_name:str =Field(max_length=255,min_length=20)
     image_url:str
-    address:Annotated[Address,"Addrred of the user"]
+    address:Annotated[Address,"Address of the user"]
 
 
 class ProjectBase(SQLModel):
-    mage_url:str
+    github_url:str
     title:str =Field(index=True)
     description:str=Field(max_length=500,min_length=10,description='A text describing  the project(500 characters maximun)')
+    tags:list[str]=Field(description="A list of tags")
+  
 
 
 class ExperienceBase(SQLModel):
@@ -45,9 +48,13 @@ class ExperienceCreate(ExperienceBase):
 
 # Schema for data updating 
 ExperienceOptionalFields=make_fields_optional(model_cls=ExperienceBase,new_model_name="ExperienceUpdate")
-ProjectUpdate=make_fields_optional(model_cls=ProfileBase,new_model_name="ProjectUpdate")
-ProfileUpdate=make_fields_optional(model_cls=ProfileBase,new_model_name="ProfileUpdate")
+ProjectOptionalFields=make_fields_optional(model_cls=ProjectBase,new_model_name="ProjectUpdate")
+ProfileOptionalFields=make_fields_optional(model_cls=ProfileBase,new_model_name="ProfileUpdate")
 
 
 class ExperienceUpdate(ExperienceOptionalFields):
+    pass
+class ProjectUpdate(ProjectOptionalFields):
+    pass
+class ProfileUpdate(ProfileOptionalFields):
     pass

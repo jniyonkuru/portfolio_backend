@@ -1,6 +1,6 @@
 from fastapi import HTTPException,FastAPI,Request
 from fastapi.responses import JSONResponse
-from app.api.v1.endpoints import experiences
+from app.api.v1.endpoints import experiences,projects
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from app.db.db_config import create_db_and_tables
@@ -41,8 +41,9 @@ async def already_exists_handler(request:Request,exc:AlreadyExistException):
 async def repository_exception_handler(request:Request,exc:RepositoryError):
  return JSONResponse(
   status_code=500,
-  content={"message":"Internal server exception occured"}
+  content={"message":f"Internal server exception occured:{exc}"}
  )
 
 
 app.include_router(experiences.router)
+app.include_router(projects.router)

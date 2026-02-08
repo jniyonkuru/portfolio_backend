@@ -5,6 +5,7 @@ from ..schemas.schemas import ProfileBase,ProjectBase,ExperienceBase,Address
 
 class Project(ProjectBase, table=True):
     id: int|None =Field(default=None,primary_key=True)
+    tags:list[str]=Field(sa_column=Column(JSON))
     
 
 class Experience(ExperienceBase,table=True):

@@ -1,6 +1,5 @@
 
 from app.repositories.base_repository import ExperienceRepository
-from app.dependencies import create_experience_repo
 from app.schemas.schemas import ExperienceCreate,ExperienceUpdate
 from app.models.models import Experience
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException
@@ -9,7 +8,7 @@ from app.custom_errors.custom_errors import AlreadyExistException,NotFoundExcept
 def create_experience_service(experience:ExperienceCreate,experience_repo:ExperienceRepository):
            
                 experience_exists=experience_repo.get_by_attributes({"role":experience.role,"organization":experience.organization})
-                if experience_exists:
+                if (x:=len(experience_exists)>0):
                        raise AlreadyExistException("Bad request,record already exists")
                 db_experience=Experience(**experience.model_dump())
                 return experience_repo.create(db_experience)
@@ -47,6 +46,7 @@ def delete_experience_service(experience_repo:ExperienceRepository,id:int)->bool
                   raise NotFoundException(f'Experience with the given {id} was not found')
            
         return experience_repo.delete(id)
+
           
        
         

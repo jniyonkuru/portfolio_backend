@@ -3,7 +3,7 @@ from sqlmodel import  select,SQLModel,Session
 from collections.abc import Sequence
 from fastapi import Depends
 from pydantic import ValidationError
-from app.models.models import Experience
+from app.models.models import Experience,Project,Profile
 from app.schemas.schemas import ExperienceUpdate
 from abc import ABC,abstractmethod
 from app.utils.logger_util import  logger
@@ -36,6 +36,7 @@ class GenericRepository(Generic[T], ABC):
     @abstractmethod
     def get_by_attributes(self, attributes: dict[str, Any]) -> Sequence[T]:
         raise NotImplementedError
+
 
 
 class GenericSqlRepository(GenericRepository[T]):
@@ -122,13 +123,26 @@ class GenericSqlRepository(GenericRepository[T]):
          try:
             statement = select(self.model)
             for key, value in attributes.items():
+                print(key,value)
                 statement = statement.where(getattr(self.model, key) == value)
             results = self.db.exec(statement)
             return list(results.all())
          except (DBAPIError,SQLAlchemyError)as e :
              self.handle_errors(operation='get_by_attributes',exception=e)
+class Repo:
+    def __init__(self,session:Session):
+        ...
 
-class ExperienceRepository(GenericSqlRepository[Experience]):
+
+class ExperienceRepository(GenericSqlRepository[Experience],Repo):
     def __init__(self, session: Session):
-        super().__init__(Experience, session)
-    
+        super().__init__(Experience, session) 
+
+class ProjectRepository(GenericSqlRepository[Project],Repo):
+    def __init__(self,  session: Session):
+        super().__init__(Project, session)
+
+
+class ProfileRepository(GenericSqlRepository[Profile],Repo):
+    def __init__(self,session:Session):
+       super().__init__(Profile,session)
