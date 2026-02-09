@@ -15,7 +15,7 @@ class Address(BaseModel):
 # Schema base classes
 class ProfileBase(SQLModel):
     email:EmailStr
-    full_name:str =Field(max_length=255,min_length=20)
+    full_name:str =Field(max_length=255,min_length=2)
     image_url:str
     address:Annotated[Address,"Address of the user"]
 
@@ -26,7 +26,6 @@ class ProjectBase(SQLModel):
     description:str=Field(max_length=500,min_length=10,description='A text describing  the project(500 characters maximun)')
     tags:list[str]=Field(description="A list of tags")
   
-
 
 class ExperienceBase(SQLModel):
     role:str =Field(max_length=255,min_length=2)

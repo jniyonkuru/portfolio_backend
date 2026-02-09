@@ -21,7 +21,6 @@ def get_project_by_id_service(id:int,repository:ProjectRepository)->Project |Non
      return project
 
 def get_list_of_project_service (repository:ProjectRepository)->list[Project]:
-     
      return repository.get_all()
 
 def update_project_service(id:int,updated_project:ProjectUpdate,repository:ProjectRepository)->Project|None:

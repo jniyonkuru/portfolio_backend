@@ -1,6 +1,6 @@
 from fastapi import HTTPException,FastAPI,Request
 from fastapi.responses import JSONResponse
-from app.api.v1.endpoints import experiences,projects
+from app.api.v1.endpoints import experiences,projects,profiles
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from app.db.db_config import create_db_and_tables
@@ -47,3 +47,4 @@ async def repository_exception_handler(request:Request,exc:RepositoryError):
 
 app.include_router(experiences.router)
 app.include_router(projects.router)
+app.include_router(profiles.router)
