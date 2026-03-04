@@ -12,21 +12,21 @@ router =APIRouter(
 
 @router.get('/',response_model=list[Project])
 async def read_projects(repository:ProjectRePoDeps):
-    return get_list_of_project_service(repository=repository)
+    return await get_list_of_project_service(repository=repository)
 
 @router.post('/')
 async def create_project (project:Annotated[ProjectCreate,Body()],repository:ProjectRePoDeps):
-    return create_project_service(project=project,repository=repository)
+    return await create_project_service(project=project,repository=repository)
 
 @router.get('/{id}',response_model=Project)
 async def get_project_by_id(id:int,repository:ProjectRePoDeps):
-    return get_project_by_id_service(id=id,repository=repository)
+    return await get_project_by_id_service(id=id,repository=repository)
 
 @router.delete('/{id}')
 async def delete_project(id:int,repository:ProjectRePoDeps):
-    return delete_project_service(id=id,repository=repository)
+    return await delete_project_service(id=id,repository=repository)
 
 @router.put('/{id}')
 async def update_project(id:int ,project:ProjectUpdate,repository:ProjectRePoDeps):
-    return update_project_service(id=id,updated_project=project,repository=repository)
+    return await update_project_service(id=id,updated_project=project,repository=repository)
 

@@ -12,7 +12,7 @@ from app.utils.logger_util import logger
 @asynccontextmanager
 async def lifespan(app:FastAPI)->AsyncGenerator:
  try:
-  create_db_and_tables()
+  await create_db_and_tables()
   logger.info("Database initialized successfully")
   yield
  except Exception as e:
@@ -21,7 +21,7 @@ async def lifespan(app:FastAPI)->AsyncGenerator:
  finally:
   logger.info("Application shutting down")
 
-app=FastAPI(lifespan=lifespan,title="Portfolio API",description="API for my porfolio")
+app=FastAPI(title="Portfolio API",lifespan=lifespan,description="API for my porfolio")
 
 @app.exception_handler(NotFoundException)
 async def not_found_handler(request:Request,exc:NotFoundException):

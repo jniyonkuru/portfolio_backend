@@ -13,16 +13,16 @@ router=APIRouter(prefix="/api/v1/profiles",
 
 @router.post('/',response_model=Profile)
 async def create_profile(profile:Annotated[ProfileCreate,Body()],repository:ProfileRepoDeps):
-    return create_profile_service(profile=profile,repository=repository)
+    return await  create_profile_service(profile=profile,repository=repository)
 
 @router.get('/',response_model=list[Profile])
 async def get_a_list_profiles(repository:ProfileRepoDeps):
-    return get_a_list_of_profiles_service(repository=repository)
+    return  await get_a_list_of_profiles_service(repository=repository)
 
 @router.get('/{id}',response_model=Profile)
 async def get_profile_by_id(id:int,repository:ProfileRepoDeps):
-    return get_profile_by_id_service(id=id, repository=repository)
+    return await  get_profile_by_id_service(id=id, repository=repository)
 
 @router.delete('/{id}')
 async def delete_profile(id:int,repository:ProfileRepoDeps):
-    return delete_profile_service(id=id,repository=repository)
+    return await  delete_profile_service(id=id,repository=repository)

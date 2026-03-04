@@ -17,25 +17,25 @@ router=APIRouter(
 @router.post("/" )
 async def create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps):
     
-     return create_experience_service(experience=experience,experience_repo=repo)
+     return await create_experience_service(experience=experience,experience_repo=repo)
       
     
 @router.get("/{id}",response_model=Experience)
 async def get_experience (id:int,repo:ExperienceRepoDeps):
-    return get_experience_by_id_service(id,repo)
+    return await get_experience_by_id_service(id,repo)
    
    
 @router.get("/",response_model=list[Experience])
 async def get_experiences(repo:ExperienceRepoDeps):
-   return  get_list_of_experiences_service(experience_repo=repo)
+   return await  get_list_of_experiences_service(experience_repo=repo)
 
 @router.delete("/{id}")
 async def  delete_experience (id:int,repo:ExperienceRepoDeps):
-    return delete_experience_service(experience_repo=repo,id=id)
+    return await delete_experience_service(experience_repo=repo,id=id)
 
 @router.put("/{id}")
 async def update_experience(id:int,repo:ExperienceRepoDeps,update_experience:Annotated[ExperienceUpdate,Body()]):
-    return update_experience_service(id=id,update_experience=update_experience,experience_repo=repo)
+    return await update_experience_service(id=id,update_experience=update_experience,experience_repo=repo)
    
 
 

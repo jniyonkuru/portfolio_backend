@@ -1,11 +1,21 @@
-from sqlmodel import create_engine,Session,SQLModel
-from typing import Annotated
-from fastapi import Depends
+# resources from third part packages
+from sqlalchemy.ext.asyncio import create_async_engine
+from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import create_async_engine
 
-DATABASE_URL = "sqlite:///./portfolio.db"
-engine = create_engine(DATABASE_URL, echo=True)
+#resources form standard packages
+import os
+
+# resources from local packages
+from app.models import Base
+
+load_dotenv()
+
+DATABASE_URL=os.environ["DATABASE_URL"]
+engine = create_async_engine(DATABASE_URL, echo=True)
 
     #create  database tables
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
+async def create_db_and_tables():
+    async with engine.begin() as conn:
+     await conn.run_sync( Base.metadata.create_all)
 

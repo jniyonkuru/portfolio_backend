@@ -1,51 +1,51 @@
 
 from app.repositories.base_repository import ExperienceRepository
 from app.schemas.schemas import ExperienceCreate,ExperienceUpdate
-from app.models.models import Experience
+from app.models import ExperienceDB
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException
 
 
-def create_experience_service(experience:ExperienceCreate,experience_repo:ExperienceRepository):
+async def create_experience_service(experience:ExperienceCreate,experience_repo:ExperienceRepository):
            
-                experience_exists=experience_repo.get_by_attributes({"role":experience.role,"organization":experience.organization})
+                experience_exists= await experience_repo.get_by_attributes({"role":experience.role,"organization":experience.organization})
                 if (x:=len(experience_exists)>0):
                        raise AlreadyExistException("Bad request,record already exists")
-                db_experience=Experience(**experience.model_dump())
+                db_experience=ExperienceDB(**experience.model_dump())
                 return experience_repo.create(db_experience)
            
 
-def get_experience_by_id_service(id:int,experience_repo:ExperienceRepository)->Experience|None:
+async def get_experience_by_id_service(id:int,experience_repo:ExperienceRepository)->ExperienceDB|None:
         """"Implement service to get an experience by id"""
-        experience=experience_repo.get_by_id(id)
+        experience= await experience_repo.get_by_id(id)
         if not experience:
                        raise NotFoundException(f"Experience with the provided id :{id} was not found")
         return experience
         
                 
 
-def get_list_of_experiences_service(experience_repo:ExperienceRepository)->list[Experience]:
+async def get_list_of_experiences_service(experience_repo:ExperienceRepository)->list[ExperienceDB]:
         """"Implement service to get lists of experiences"""
 
-        return experience_repo.get_all()
+        return await experience_repo.get_all()
        
          
 
-def update_experience_service(experience_repo:ExperienceRepository,  update_experience:ExperienceUpdate,id:int):
+async def update_experience_service(experience_repo:ExperienceRepository,  update_experience:ExperienceUpdate,id:int):
                 """"Implement service to update experience"""
-                experience=experience_repo.get_by_id(id)
+                experience=await experience_repo.get_by_id(id)
                 if not experience:
                           raise NotFoundException(f'Experience with the given {id} was not found')
-                return experience_repo.update(obj=update_experience,id=id)
+                return await experience_repo.update(obj=update_experience,id=id)
                 
 
-def delete_experience_service(experience_repo:ExperienceRepository,id:int)->bool|None:
+async def delete_experience_service(experience_repo:ExperienceRepository,id:int)->bool|None:
         """"Implement service to delete a service"""
 
-        experience=experience_repo.get_by_id(id)
+        experience= await experience_repo.get_by_id(id)
         if not experience:
                   raise NotFoundException(f'Experience with the given {id} was not found')
            
-        return experience_repo.delete(id)
+        return await experience_repo.delete(id)
 
           
        
