@@ -2,8 +2,8 @@ from fastapi import APIRouter,Body
 from app.services.profile_services import create_profile_service,edit_profile_service,get_a_list_of_profiles_service,delete_profile_service,get_profile_by_id_service
  
 from app.dependencies import  ProfileRepoDeps
-from app.schemas.schemas import ProfileCreate
-from app.models.models import Profile
+from app.schemas import Profile,ProfileCreate
+from app.models import ProfileDB
 from typing import Annotated
 
 router=APIRouter(prefix="/api/v1/profiles",

@@ -1,14 +1,20 @@
+
+#resources from third part packages
+
 from typing import Annotated,Type,TypeVar
 from fastapi import Depends
-from sqlmodel import create_engine, Session, SQLModel
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
+#resources from  local packages
+
 from app.db.db_config import engine
 from app.repositories.base_repository import ExperienceRepository,ProfileRepository,Repo,ProjectRepository
-from app.models.models import  Experience,Project,Profile
 from app.db.session import create_session
 
 T=TypeVar("T", bound=Repo)
 
-SessionDep = Annotated[Session, Depends(create_session)]
+SessionDep = Annotated[AsyncSession, Depends(create_session)]
 
 def get_repo(cls:Type[T]):
     def _get_repo(session:SessionDep)->T:

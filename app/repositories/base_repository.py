@@ -1,17 +1,24 @@
+#resources from  standard packages
 from typing import Generic,TypeVar,Type,Any
-from sqlmodel import  select,SQLModel
 from collections.abc import Sequence
+from abc import ABC,abstractmethod
+
+#resources from third part packages
 from fastapi import Depends
 from pydantic import ValidationError
-from app.models.models import ExperienceDB,UserDB,ProjectDB,ProfileDB
-from app.schemas.schemas import ExperienceUpdate
-from abc import ABC,abstractmethod
+from sqlalchemy.exc import DBAPIError,SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+
+#resources from local packages
+
+from app.models import ExperienceDB,UserDB,ProjectDB,ProfileDB
 from app.utils.logger_util import  logger
 from app.custom_errors.custom_errors import RepositoryError
-from sqlalchemy.exc import DBAPIError,SQLAlchemyError
-from sqlmodel.ext.asyncio.session import AsyncSession
 
-T = TypeVar("T", bound=SQLModel)
+from app.models import Base
+
+T = TypeVar("T", bound=Base)
 
 class GenericRepository(Generic[T], ABC):
    @abstractmethod
@@ -64,8 +71,8 @@ class GenericSqlRepository(GenericRepository[T]):
     async def get_all(self) -> list[T]:
         try:
             statement = select(self.model)
-            results =  await self.db.exec(statement)
-            return list(results.all())
+            results =  await self.db.execute(statement)
+            return [result for result in results.scalars().all()]
         
         except (DBAPIError,SQLAlchemyError) as e:
            await  self.handle_errors(operation='get_all',exception=e)
@@ -126,8 +133,8 @@ class GenericSqlRepository(GenericRepository[T]):
             for key, value in attributes.items():
                 print(key,value)
                 statement = statement.where(getattr(self.model, key) == value)
-            results = await self.db.exec(statement)
-            return list(results.all())
+            results = await self.db.execute(statement)
+            return [result for result in results.scalars().all()]
          except (DBAPIError,SQLAlchemyError)as e :
             await  self.handle_errors(operation='get_by_attributes',exception=e)
 class Repo:

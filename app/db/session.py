@@ -3,7 +3,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession,async_sessionmaker
 
 #  resource from local packages
-from app.db import engine
+from app.db.db_config import engine
 
 
 async_session_maker=async_sessionmaker(

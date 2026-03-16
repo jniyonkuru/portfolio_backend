@@ -1,6 +1,6 @@
 
 from app.repositories.base_repository import ExperienceRepository
-from app.schemas.schemas import ExperienceCreate,ExperienceUpdate
+from app.schemas import ExperienceCreate,ExperienceUpdate
 from app.models import ExperienceDB
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException
 
@@ -10,8 +10,14 @@ async def create_experience_service(experience:ExperienceCreate,experience_repo:
                 experience_exists= await experience_repo.get_by_attributes({"role":experience.role,"organization":experience.organization})
                 if (x:=len(experience_exists)>0):
                        raise AlreadyExistException("Bad request,record already exists")
-                db_experience=ExperienceDB(**experience.model_dump())
-                return experience_repo.create(db_experience)
+                db_experience=ExperienceDB(role=experience.role,
+                         organization=experience.organization,
+                         start_date=experience.start_date,
+                         end_date=experience.end_date,
+                         tasks=experience.tasks,
+                         user_id=2)
+                
+                return  await experience_repo.create(db_experience)
            
 
 async def get_experience_by_id_service(id:int,experience_repo:ExperienceRepository)->ExperienceDB|None:

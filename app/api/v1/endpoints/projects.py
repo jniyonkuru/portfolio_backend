@@ -1,8 +1,8 @@
 from fastapi import APIRouter,Body
-from app.models.models import Project
+from app.models import ProjectDB
 from app.services.project_services import create_project_service,delete_project_service,update_project_service,get_list_of_project_service,get_project_by_id_service
 from app.dependencies import ProjectRePoDeps
-from app.schemas.schemas import ProjectCreate,ProjectUpdate
+from app.schemas import Project,ProjectCreate,ProjectUpdate
 from typing import Annotated
 router =APIRouter(
     prefix='/api/v1/projects',
