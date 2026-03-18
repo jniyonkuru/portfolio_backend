@@ -158,3 +158,5 @@ class ProfileRepository(GenericSqlRepository[ProfileDB],Repo):
 class UserRepository(GenericSqlRepository[UserDB],Repo):
     def __init__(self, session:AsyncSession):
         super().__init__(UserDB, session)
+
+    

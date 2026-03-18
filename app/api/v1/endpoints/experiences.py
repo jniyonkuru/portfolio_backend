@@ -13,7 +13,7 @@ from  app.models import ExperienceDB
 from app.schemas import ExperienceCreate,ExperienceUpdate,Experience
 from app.repositories.base_repository import ExperienceRepository
 from app.services.experience_services import create_experience_service,get_experience_by_id_service,get_list_of_experiences_service,update_experience_service,delete_experience_service
-from app.dependencies import ExperienceRepoDeps
+from app.dependencies import ExperienceRepoDeps,auth_dependency
 
 
 
@@ -25,7 +25,7 @@ router=APIRouter(
 
 
 @router.post("/",response_model=Experience )
-async def create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps):
+async def create_experience(experience:Annotated[ExperienceCreate,Body()],repo:ExperienceRepoDeps,token:auth_dependency):
     
      return await create_experience_service(experience=experience,experience_repo=repo)
       

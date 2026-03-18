@@ -10,3 +10,6 @@ class NotFoundException(AppError):
 
 class AlreadyExistException(AppError):
      pass
+
+class CredentialException(AppError):
+     pass

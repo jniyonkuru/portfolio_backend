@@ -12,6 +12,7 @@ import typer
 from app.models.models import UserDB
 from app.utils.logger_util import logger
 from app.db.session import create_session
+from app.utils.bcrypt_utils import generate_hash
 
 
 
@@ -32,8 +33,11 @@ async def create_user_seed(session:AsyncSession):
       if  user_exists:
        logger.info("User with the given email already exists")
        return 
-    
-      new_user=UserDB(first_name=user["first_name"],last_name=user["last_name"],email=user['email'],user_name=user['user_name'],password=user['password'])
+      
+      hashed_password=generate_hash(bytes(user.get('password'),'utf-8')) if "password" in user else None
+
+      new_user=UserDB(first_name=user["first_name"],last_name=user["last_name"],email=user['email'],user_name=user['user_name'],password=hashed_password)
+
       session.add(new_user)
       await session.commit()
       await session.refresh(new_user)

@@ -5,7 +5,7 @@ from app.models import ProfileDB
 
 async def create_profile_service(profile:ProfileCreate,repository:ProfileRepository):
       
-          profile_exist=await repository.get_by_attributes({"email":profile.email})
+          profile_exist=await repository.get_by_attributes({"user_id":profile.user_id})
 
           if profile_exist:
                   raise AlreadyExistException(message="Profile already exists")

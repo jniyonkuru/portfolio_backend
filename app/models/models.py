@@ -4,7 +4,7 @@ from datetime  import date,datetime
 # resources from  third part packages
 from pydantic import EmailStr
 from sqlalchemy.orm import DeclarativeBase ,mapped_column,Mapped,relationship
-from sqlalchemy.types import String,Integer,DateTime,JSON
+from sqlalchemy.types import String,Integer,DateTime,JSON,LargeBinary
 from sqlalchemy import func,ForeignKey
 
 # resources from local packages
@@ -65,9 +65,9 @@ class UserDB(BaseModel):
     __tablename__  ="users"
     first_name:Mapped[str]=mapped_column(String(255),nullable=False)
     last_name:Mapped[str]=mapped_column(String(255),nullable=False)
-    user_name:Mapped[str]=mapped_column(String(255),nullable=False, index=True)
+    user_name:Mapped[str]=mapped_column(String(255),nullable=False, index=True,unique=True)
     email:Mapped[EmailStr]=mapped_column(String(255),unique=True,nullable=False,index=True)
-    password:Mapped[str]=mapped_column(String(255),nullable=False)
+    password:Mapped[bytes]=mapped_column(LargeBinary,nullable=False)
     projects=relationship("ProjectDB",back_populates="users")
     profile=relationship("ProfileDB",back_populates="users",uselist=False)
     experiences=relationship("ExperienceDB",back_populates="users")

@@ -13,6 +13,12 @@ class Address(BaseModel):
     city:str
     phone:str
 
+class JWTPayload(BaseModel):
+    id:int
+class Credentials(BaseModel):
+    username:str
+    password:str
+
 class Base(BaseModel):
     id:int
     created_at:datetime
@@ -73,7 +79,7 @@ class Project(ProjectCreate,Base):
 class Experience(ExperienceCreate,Base):
     pass
 
-class User(UserCreate,Base):
+class User(UserBase,Base):
     pass
 
 
