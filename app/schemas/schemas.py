@@ -1,12 +1,20 @@
 # resources from standard packages
 from datetime import datetime
 from typing_extensions import Self
+from enum import Enum
 
 #resources from third part packages 
 from pydantic import BaseModel,Field,AnyUrl,EmailStr,model_validator
 
 #resources from local packages
 from app.utils.pydantic_utils import make_fields_optional
+
+
+#user roles
+
+class UserRoles(str,Enum):
+    ADMIN='admin'
+
 
 class Address(BaseModel):
     country:str
@@ -25,7 +33,8 @@ class Base(BaseModel):
     updated_at:datetime
 
 class ProjectBase(BaseModel):
-    github_url:AnyUrl=Field(max_length=255, description="title of the project")
+    github_url:str=Field(max_length=255, description="title of the project")
+    description:str=Field(max_length=500,description="A text description the Project")
     title:str=Field(max_length=255,description="Title of the project")
     tags:list[str]=Field(description="A list of tags")
 
@@ -35,6 +44,7 @@ class UserBase(BaseModel):
     last_name:str=Field(max_length=255,description="User's last Name")
     user_name:str=Field(max_length=255,description="user_name")
     email:EmailStr=Field(description="User's email")
+    role:UserRoles=Field(description="User's role")
 
 
 

@@ -1,16 +1,18 @@
 # resources from  local packages
 
-from app.schemas.schemas import ProjectCreate,ProjectUpdate
+from app.schemas import ProjectCreate,ProjectUpdate,User
 from app.repositories.base_repository import ProjectRepository
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException
 from app.models import ProjectDB
 
-async def create_project_service(project:ProjectCreate,repository:ProjectRepository)->ProjectDB |None:
+async def create_project_service(project:ProjectCreate,repository:ProjectRepository,user:User)->ProjectDB |None:
 
      project_exists= await repository.get_by_attributes({"title":project.title,"github_url":project.github_url})
      if(x:=len(project_exists)>0):
           raise AlreadyExistException(f"Project with title :{project.title} already  exists")
-     new_project=ProjectDB(**project.model_dump())
+     
+
+     new_project=ProjectDB(title=project.title,description=project.description,user_id=user.id,github_url=project.github_url,tags=project.tags)
      return await repository.create(new_project)
 
 async def get_project_by_id_service(id:int,repository:ProjectRepository)->ProjectDB |None:
@@ -32,7 +34,7 @@ async def update_project_service(id:int,updated_project:ProjectUpdate,repository
           raise NotFoundException(f"project with id :{id} was not found")
      return await repository.update(obj=updated_project,id=id)
 
-async def delete_project_service(id:int,repository:ProjectRepository)->bool|None:
+async def delete_project_service(id:int,repository:ProjectRepository,user:User)->bool|None:
      
      project=await repository.get_by_id(id)
      if not project:

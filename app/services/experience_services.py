@@ -1,12 +1,11 @@
 #resources from local packages
 from app.repositories.base_repository import ExperienceRepository
-from app.schemas import ExperienceCreate,ExperienceUpdate
+from app.schemas import ExperienceCreate,ExperienceUpdate,User
 from app.models import ExperienceDB
-from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException
-from app.dependencies import auth_dependency
+from app.custom_errors import AlreadyExistException,NotFoundException
 
 
-async def create_experience_service(experience:ExperienceCreate,experience_repo:ExperienceRepository):
+async def create_experience_service(experience:ExperienceCreate,experience_repo:ExperienceRepository,user:User):
            
                 experience_exists= await experience_repo.get_by_attributes({"role":experience.role,"organization":experience.organization})
                 if (x:=len(experience_exists)>0):
@@ -16,7 +15,7 @@ async def create_experience_service(experience:ExperienceCreate,experience_repo:
                          start_date=experience.start_date,
                          end_date=experience.end_date,
                          tasks=experience.tasks,
-                         user_id=1)
+                         user_id=user.id)
                 
                 return  await experience_repo.create(db_experience)
            

@@ -4,9 +4,11 @@ import json
 import asyncio
 
 #resources from third part  packages
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import typer
+from dotenv import load_dotenv
 
 #resources from local packages 
 from app.models.models import UserDB
@@ -14,7 +16,9 @@ from app.utils.logger_util import logger
 from app.db.session import create_session
 from app.utils.bcrypt_utils import generate_hash
 
+load_dotenv()
 
+password=os.environ["PASSWORD"]
 
 app=typer.Typer()
 async def create_user_seed(session:AsyncSession):
@@ -34,9 +38,10 @@ async def create_user_seed(session:AsyncSession):
        logger.info("User with the given email already exists")
        return 
       
-      hashed_password=generate_hash(bytes(user.get('password'),'utf-8')) if "password" in user else None
+      hashed_password=generate_hash(bytes(password,'utf-8'))
+      user.update({"password":hashed_password})
 
-      new_user=UserDB(first_name=user["first_name"],last_name=user["last_name"],email=user['email'],user_name=user['user_name'],password=hashed_password)
+      new_user=UserDB(**user)
 
       session.add(new_user)
       await session.commit()
@@ -55,8 +60,6 @@ async def create_user_seed(session:AsyncSession):
        await session.rollback()
        logger.info(f"Error while seeding user:{e}")
     
-
-
 
 @app.command()
 def seed_user():

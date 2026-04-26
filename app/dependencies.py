@@ -35,6 +35,7 @@ ProfileRepoDeps=Annotated[ProfileRepository,Depends(get_repo(ProfileRepository))
 UserRepoDeps=Annotated[UserRepository,Depends(get_repo(UserRepository))]
 
 
-# Authorization dependencies 
+# Authentication dependencies 
 
 auth_dependency=Annotated[str,Depends(oauth2_scheme)]
+

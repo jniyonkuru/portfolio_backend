@@ -67,3 +67,4 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 dev="app.cli:dev"
 seed="app.cli:seed"
+prod="app.cli:prod"
