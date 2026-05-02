@@ -34,6 +34,9 @@ async def create_user_seed(session:AsyncSession):
       result= await session.execute(select(UserDB).where(UserDB.email==user["email"]))
       user_exists=result.scalar_one_or_none()
 
+
+      print("user exists",user_exists)
+
       if  user_exists:
        logger.info("User with the given email already exists")
        return 

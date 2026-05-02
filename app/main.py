@@ -17,20 +17,7 @@ from app.db.db_config import create_db_and_tables
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException,RepositoryError,CredentialException
 from app.api.v1.endpoints import experiences,projects,profiles,users
 
-
-@asynccontextmanager
-async def lifespan(app:FastAPI)->AsyncGenerator:
- try:
-  await create_db_and_tables()
-  logger.info("Database initialized successfully")
-  yield
- except Exception as e:
-  logger.error(f"Failed to initialize database:{e}")
-  raise
- finally:
-  logger.info("Application shutting down")
-
-app=FastAPI(title="Portfolio API",lifespan=lifespan,description="API for my porfolio")
+app=FastAPI(title="Portfolio API",description="API for my porfolio")
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,

@@ -1,11 +1,10 @@
-# from pydantic_settings import BaseSettings,SettingsConfigDict
+from pydantic_settings import BaseSettings,SettingsConfigDict
 
-# class Settings(BaseSettings):
-#     model_config=SettingsConfigDict(env_file='a.env',env_file_encoding='utf-8')
-#     database_url:str
-#     alembic_url:str
+class Settings(BaseSettings):
+    model_config=SettingsConfigDict(env_file='../../.env',env_file_encoding='utf-8',extra='ignore')
+    database_url:str=""
+    alembic_url:str=""
 
 
-# settings=Settings()
+app_settings=Settings()
 
-# print(settings.database_url)
