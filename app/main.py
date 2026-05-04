@@ -17,7 +17,7 @@ from app.db.db_config import create_db_and_tables
 from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException,RepositoryError,CredentialException
 from app.api.v1.endpoints import experiences,projects,profiles,users
 
-app=FastAPI(title="Portfolio API",description="API for my porfolio")
+app=FastAPI(title="Portfolio API",description="API for my portfolio")
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -42,7 +42,7 @@ async def already_exists_handler(request:Request,exc:AlreadyExistException):
 async def repository_exception_handler(request:Request,exc:RepositoryError):
  return JSONResponse(
   status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-  content={"message":f"Internal server exception occured:{exc}"}
+  content={"message":f"Internal server exception occurred:{exc}"}
  )
 @app.exception_handler(CredentialException)
 async def credential_exception_handler(reques:Request,exc:CredentialException):

@@ -4,7 +4,7 @@
 import os
 from datetime import timedelta
 from typing import Any
-#resourcces from third part packages 
+#resources from third part packages
 from fastapi import HTTPException,status
 from dotenv import load_dotenv
 
@@ -13,7 +13,7 @@ from app.repositories import UserRepository
 from app.utils.jwt_utils import generate_token, decode_token
 from app.utils.bcrypt_utils import verify_password
 from app.dependencies import UserRepoDeps
-from app.schemas import Credentials,User
+from app.schemas import User
 from app.custom_errors import NotFoundException
 
 
@@ -27,7 +27,7 @@ class UserServices:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not login !")
         
         id=payload.id
-        userDB= await self.repository.get_by_id(id)
+        userDB= self.repository.get_by_id(id)
         if userDB is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Not login !")
         
@@ -59,9 +59,7 @@ class UserServices:
     #       }
     
     async def read_user_by_id(self,id:int):
-
-        userDB = await self.repository.get_by_id(id=id)
-
+        userDB =self.repository.get_by_id(id=id)
         if userDB is None:
             raise NotFoundException(message=f"User  was not found")
         
@@ -75,8 +73,7 @@ class UserServices:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid request"
             )
-        list_userDB=await self.repository.get_by_attributes(attributes=obj)
-
+        list_userDB= self.repository.get_by_attributes(attributes=obj)
         if len(list_userDB)<1:
             raise NotFoundException(message="User was not found")
         
