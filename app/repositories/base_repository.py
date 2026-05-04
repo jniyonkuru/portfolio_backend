@@ -4,11 +4,10 @@ from collections.abc import Sequence
 from abc import ABC,abstractmethod
 
 #resources from third part packages
-from fastapi import Depends
-from pydantic import ValidationError
+
 from sqlalchemy.exc import DBAPIError,SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 #resources from local packages
 
@@ -22,77 +21,77 @@ T = TypeVar("T", bound=Base)
 
 class GenericRepository(Generic[T], ABC):
    @abstractmethod
-   async def get_by_id(self, id: int) -> T | None:
+   def get_by_id(self, id: int) -> T | None:
         raise NotImplementedError
     
    @abstractmethod
-   async def get_all(self) -> Sequence[T]:
+   def get_all(self) -> Sequence[T]:
         raise NotImplementedError
     
    @abstractmethod
-   async def create(self, obj: T) -> T:
+   def create(self, obj: T) -> T:
         raise NotImplementedError
     
    @abstractmethod
-   async def update(self, obj: T, id: int) -> T | None:
+   def update(self, obj: T, id: int) -> T | None:
         raise NotImplementedError
     
    @abstractmethod
-   async def delete(self, id: int) -> bool|None:
+   def delete(self, id: int) -> bool|None:
         raise NotImplementedError
     
    @abstractmethod
-   async def get_by_attributes(self, attributes: dict[str, Any]) -> Sequence[T]:
+   def get_by_attributes(self, attributes: dict[str, Any]) -> Sequence[T]:
         raise NotImplementedError
 
 
 
 class GenericSqlRepository(GenericRepository[T]):
-    def __init__(self, model: Type[T], session: AsyncSession):
+    def __init__(self, model: Type[T], session: Session):
         self.model = model
         self.db = session
 
 
-    async def handle_errors(self,operation:str, exception:Exception):
+    def handle_errors(self,operation:str, exception:Exception):
 
           logger.error(f"Repository error during {operation}:{exception}",exc_info=True,extra={"model":self.model.__name__})
 
           raise RepositoryError(
                   message=f'Database error during {operation}')
 
-    async def get_by_id(self, id: int) -> T | None:
+    def get_by_id(self, id: int) -> T | None:
           
         try: 
-            return  await self.db.get(self.model, id)
+            return   self.db.get(self.model, id)
       
         except (SQLAlchemyError,DBAPIError) as e:
-            await self.handle_errors(operation=f'get_by_id {id}',exception=e)
+             self.handle_errors(operation=f'get_by_id {id}',exception=e)
     
-    async def get_all(self) -> list[T]:
+    def get_all(self) -> list[T]:
         try:
             statement = select(self.model)
-            results =  await self.db.execute(statement)
+            results =   self.db.execute(statement)
             return [result for result in results.scalars().all()]
         
         except (DBAPIError,SQLAlchemyError) as e:
-           await  self.handle_errors(operation='get_all',exception=e)
+             self.handle_errors(operation='get_all',exception=e)
          
     
-    async def create(self, obj: T) -> T:
+    def create(self, obj: T) -> T:
          try:
             self.db.add(obj)
-            await self.db.commit()
-            await self.db.refresh(obj)
+            self.db.commit()
+            self.db.refresh(obj)
             return obj
         
          except (DBAPIError,SQLAlchemyError) as e :
-             await self.db.rollback()
-             await self.handle_errors(operation='create',exception=e)
+             self.db.rollback()
+             self.handle_errors(operation='create',exception=e)
           
     
-    async def update(self, obj: Any, id: int) -> T | None:
+    def update(self, obj: Any, id: int) -> T | None:
         try: 
-            item = await self.get_by_id(id)
+            item = self.get_by_id(id)
             if not item:
                     return None
             if hasattr(obj,"model_dump"):
@@ -105,58 +104,58 @@ class GenericSqlRepository(GenericRepository[T]):
                 setattr(item, key, value)
             
             self.db.add(item)
-            await self.db.commit()
-            await self.db.refresh(item)
+            self.db.commit()
+            self.db.refresh(item)
             return item
     
         except (SQLAlchemyError,DBAPIError) as e :
-            await self.db.rollback()
-            await self.handle_errors(operation='update',exception=e)
+             self.db.rollback()
+             self.handle_errors(operation='update',exception=e)
             
-    async def delete(self, id: int) -> bool|None:
+    def delete(self, id: int) -> bool|None:
         try:
         
             item = self.get_by_id(id)
             if not item:
                 return False
          
-            await self.db.delete(item)
-            await self.db.commit()
+            self.db.delete(item)
+            self.db.commit()
             return True
         except (DBAPIError,SQLAlchemyError)as  e:
-            await  self.db.rollback()
-            await self.handle_errors(operation='delete',exception=e)
+            self.db.rollback()
+            self.handle_errors(operation='delete',exception=e)
     
-    async def get_by_attributes(self, attributes: dict[str, Any]) -> list[T]:
+    def get_by_attributes(self, attributes: dict[str, Any]) -> list[T]:
          try:
             statement = select(self.model)
+            print(statement)
             for key, value in attributes.items():
-                print(key,value)
                 statement = statement.where(getattr(self.model, key) == value)
-            results = await self.db.execute(statement)
+            results = self.db.execute(statement)
             return [result for result in results.scalars().all()]
          except (DBAPIError,SQLAlchemyError)as e :
-            await  self.handle_errors(operation='get_by_attributes',exception=e)
+               self.handle_errors(operation='get_by_attributes',exception=e)
 class Repo:
-    def __init__(self,session:AsyncSession):
+    def __init__(self,session:Session):
         ...
 
 
 class ExperienceRepository(GenericSqlRepository[ExperienceDB],Repo):
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session:Session):
         super().__init__(ExperienceDB, session) 
 
 class ProjectRepository(GenericSqlRepository[ProjectDB],Repo):
-    def __init__(self,  session: AsyncSession):
+    def __init__(self,  session: Session):
         super().__init__(ProjectDB, session)
 
 
 class ProfileRepository(GenericSqlRepository[ProfileDB],Repo):
-    def __init__(self,session:AsyncSession):
+    def __init__(self,session:Session):
        super().__init__(ProfileDB,session)
 
 class UserRepository(GenericSqlRepository[UserDB],Repo):
-    def __init__(self, session:AsyncSession):
+    def __init__(self, session:Session):
         super().__init__(UserDB, session)
 
     

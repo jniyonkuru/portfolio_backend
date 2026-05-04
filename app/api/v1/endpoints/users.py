@@ -32,7 +32,7 @@ async def get_current_user(token:Annotated[str,Depends(oauth2_scheme)],user_serv
                  raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="Invalid token")
-          user=await user_services.read_user_by_id(id=payload.id)
+          user= await user_services.read_user_by_id(id=payload.id)
 
           return user
 
@@ -54,9 +54,9 @@ async def login(credentials:Credentials,user_services:Annotated[UserServices,Dep
 
        if user is None:
               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail='Incorrect username or password')
-       
+
        password_match=verify_password(password=bytes(credentials.password,'utf-8'),hashed_password=user.password)
-    
+
        if not password_match:
               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail='Incorrect username or password ')
        access_token_expires=timedelta(minutes=float(access_token_minutes))
@@ -80,5 +80,5 @@ async def current_user(user:Annotated[User,Depends(get_current_user)]):
 @router.post('/token')
 async def user_login(form_data:Annotated[OAuth2PasswordRequestForm,Depends()],user_services:Annotated[UserServices,Depends(UserServices)]):
       credentials=Credentials(username=form_data.username,password=form_data.password)
-      token =await login(credentials=credentials,user_services=user_services)
+      token = await login(credentials=credentials,user_services=user_services)
       return token
