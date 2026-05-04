@@ -7,17 +7,17 @@ from app.models import ProjectDB
 
 async def create_project_service(project:ProjectCreate,repository:ProjectRepository,user:User)->ProjectDB |None:
 
-     project_exists= await repository.get_by_attributes({"title":project.title,"github_url":project.github_url})
-     if(x:=len(project_exists)>0):
+     project_exists=  repository.get_by_attributes({"title":project.title,"github_url":project.github_url})
+     if len(project_exists)>0:
           raise AlreadyExistException(f"Project with title :{project.title} already  exists")
      
 
      new_project=ProjectDB(title=project.title,description=project.description,user_id=user.id,github_url=project.github_url,tags=project.tags)
-     return await repository.create(new_project)
+     return  repository.create(new_project)
 
 async def get_project_by_id_service(id:int,repository:ProjectRepository)->ProjectDB |None:
      
-     project= await repository.get_by_id(id=id)
+     project= repository.get_by_id(id=id)
 
      if not project :
           raise  NotFoundException(f"Project with the given id :{id} was not found ")
@@ -25,18 +25,18 @@ async def get_project_by_id_service(id:int,repository:ProjectRepository)->Projec
      return project
 
 async def get_list_of_project_service (repository:ProjectRepository)->list[ProjectDB]:
-     return await repository.get_all()
+     return repository.get_all()
 
 async def update_project_service(id:int,updated_project:ProjectUpdate,repository:ProjectRepository)->ProjectDB|None:
      
-     project=await repository.get_by_id(id)
+     project= repository.get_by_id(id)
      if not project :
           raise NotFoundException(f"project with id :{id} was not found")
-     return await repository.update(obj=updated_project,id=id)
+     return repository.update(obj=updated_project,id=id)
 
 async def delete_project_service(id:int,repository:ProjectRepository,user:User)->bool|None:
      
-     project=await repository.get_by_id(id)
+     project= repository.get_by_id(id)
      if not project:
           raise NotFoundException(f'Project with id :{id} was not found')
-     return await repository.delete(id)
+     return repository.delete(id)

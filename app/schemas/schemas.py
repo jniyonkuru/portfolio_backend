@@ -5,16 +5,12 @@ from enum import Enum
 
 #resources from third part packages 
 from pydantic import BaseModel,Field,AnyUrl,EmailStr,model_validator
-
 #resources from local packages
 from app.utils.pydantic_utils import make_fields_optional
-
-
 #user roles
 
 class UserRoles(str,Enum):
     ADMIN='admin'
-
 
 class Address(BaseModel):
     country:str
@@ -49,15 +45,15 @@ class UserBase(BaseModel):
 
 
 class ExperienceBase(BaseModel):
-    role:str=Field(max_length=255, description="Roles Undertakend")
+    role:str=Field(max_length=255, description="Roles Undertaken")
     organization:str=Field(max_length=255,description="Organization name")
     start_date:datetime=Field(description="Starting date")
-    end_date:datetime=Field(description="End date")
+    end_date:datetime|None=Field(description="End date",default=None)
     tasks:list[str]=Field(description='a list of tasks undertaken',default=[])
 
     @model_validator(mode='after')
     def validates_date(self)->Self:
-        if self.start_date>=self.end_date:
+        if self.end_date and self.start_date>=self.end_date:
             raise ValueError("Starting date  can not be after the ending date")
         return self
 

@@ -2,15 +2,12 @@
 from datetime  import date,datetime
 
 # resources from  third part packages
-from pydantic import EmailStr,AnyUrl
+from pydantic import EmailStr
 from sqlalchemy.orm import DeclarativeBase ,mapped_column,Mapped,relationship
 from sqlalchemy.types import String,Integer,DateTime,JSON,LargeBinary
 from sqlalchemy import func,ForeignKey,Enum
 
 # resources from local packages
-
-from app.utils.pydantic_utils import make_fields_optional
-from app.utils.utcnow import utcnow
 from  app.schemas import UserRoles
 
 
@@ -25,7 +22,7 @@ class BaseModel(Base):
     updated_at:Mapped[datetime]=mapped_column(DateTime,default=func.now(),onupdate=func.now())
     
 
-class Address():
+class Address:
     country:str
     city:str
     phone:str
@@ -46,7 +43,7 @@ class ProjectDB(BaseModel):
 
     github_url:Mapped[str]=mapped_column(String(255),unique=True,nullable=False)
     title:Mapped[str]=mapped_column(String(255),nullable=False)
-    description:Mapped[str]=mapped_column(String(255),nullable=False)
+    description:Mapped[str]=mapped_column(String,nullable=False)
     tags:Mapped[list[str]]=mapped_column(JSON)
     user_id:Mapped[int]=mapped_column(Integer,ForeignKey("users.id"))
     users=relationship("UserDB",back_populates="projects")
@@ -57,8 +54,8 @@ class ExperienceDB(BaseModel):
 
     role:Mapped[str]=mapped_column(String(255),nullable=False)
     organization:Mapped[str]=mapped_column(String(255),nullable=False)
-    start_date:Mapped[date]=mapped_column(DateTime,nullable=False)
-    end_date:Mapped[date]=mapped_column(DateTime,nullable=True)
+    start_date:Mapped[datetime]=mapped_column(DateTime,nullable=False)
+    end_date:Mapped[datetime|None]=mapped_column(DateTime,nullable=True)
     tasks:Mapped[list[str]]=mapped_column(JSON)
     user_id:Mapped[int]=mapped_column(Integer,ForeignKey("users.id"))
     users=relationship("UserDB",back_populates="experiences")

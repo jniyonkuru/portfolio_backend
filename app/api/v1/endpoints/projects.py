@@ -4,8 +4,7 @@ from typing import Annotated
 #resources from third part packages
 from fastapi import APIRouter,Body,Depends
 
-#resources from  local packages 
-from app.models import ProjectDB
+#resources from  local packages
 from app.services.project_services import create_project_service,delete_project_service,update_project_service,get_list_of_project_service,get_project_by_id_service
 from app.dependencies import ProjectRePoDeps
 from app.schemas import Project,ProjectCreate,ProjectUpdate,UserRoles,User

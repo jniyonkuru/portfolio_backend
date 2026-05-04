@@ -3,7 +3,7 @@
 
 from typing import Annotated,Type,TypeVar
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 
 
@@ -18,7 +18,7 @@ oauth2_scheme=OAuth2PasswordBearer('token')
 
 T=TypeVar("T", bound=Repo)
 
-SessionDep = Annotated[AsyncSession, Depends(create_session)]
+SessionDep = Annotated[Session, Depends(create_session)]
 
 def get_repo(cls:Type[T]):
     def _get_repo(session:SessionDep)->T:

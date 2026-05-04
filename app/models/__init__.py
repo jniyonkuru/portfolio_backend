@@ -1,1 +1,1 @@
-from .models import Base,UserDB,ProfileDB,ProjectDB,ExperienceDB
+from .models import Base,UserDB,ProfileDB,ProjectDB,ExperienceDB,BaseModel

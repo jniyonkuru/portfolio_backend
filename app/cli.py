@@ -1,6 +1,5 @@
 import uvicorn
 import asyncio
-from app.user_seed import seed_user
 
 def dev():
     uvicorn.run(

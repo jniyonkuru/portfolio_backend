@@ -5,16 +5,16 @@ from app.models import ProfileDB
 
 async def create_profile_service(profile:ProfileCreate,repository:ProfileRepository):
       
-          profile_exist=await repository.get_by_attributes({"user_id":profile.user_id})
+          profile_exist= repository.get_by_attributes({"user_id":profile.user_id})
 
           if profile_exist:
                   raise AlreadyExistException(message="Profile already exists")
           new_profile=ProfileDB(**profile.model_dump())
-          return  await repository.create(new_profile)
+          return   repository.create(new_profile)
 
 async def edit_profile_service(id:int,profile_update:ProfileUpdate,repository:ProfileRepository):
         
-        profile=await repository.get_by_id(id=id)
+        profile= repository.get_by_id(id=id)
         if not profile :
                 raise NotFoundException(message=f"Profile with id :{id} was not found")
          
@@ -22,7 +22,7 @@ async def edit_profile_service(id:int,profile_update:ProfileUpdate,repository:Pr
 
 async def get_profile_by_id_service(id:int,repository:ProfileRepository):
         
-        profile=await repository.get_by_id(id=id)
+        profile= repository.get_by_id(id=id)
 
         if not profile :
                 raise NotFoundException(message="Profile with id:{id} was not found!")
@@ -31,12 +31,12 @@ async def get_profile_by_id_service(id:int,repository:ProfileRepository):
 
 async def get_a_list_of_profiles_service(repository:ProfileRepository):
         
-        return await repository.get_all()
+        return  repository.get_all()
 async def  delete_profile_service(id:int,repository:ProfileRepository):
         
-        profile= await repository.get_by_id(id=id)
+        profile=  repository.get_by_id(id=id)
 
         if not profile :
                 raise NotFoundException(message="profile with id :{id} was not found")
         
-        return await repository.delete(id=id)
+        return  repository.delete(id=id)
