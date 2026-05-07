@@ -1,23 +1,24 @@
 
 #resources from standards packages
+import os
 
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+#resources from  third party packages
 
-#resources from  third part packages
-from  fastapi import Request
-from fastapi.responses import JSONResponse
 from fastapi import HTTPException,FastAPI,Request,status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #resources from local  packages
-from app.utils.logger_util import logger
-from app.db.db_config import create_db_and_tables
-from app.custom_errors.custom_errors import AlreadyExistException,NotFoundException,RepositoryError,CredentialException
-from app.api.v1.endpoints import experiences,projects,profiles,users
+from .custom_errors.custom_errors import AlreadyExistException,NotFoundException,RepositoryError,CredentialException
+from .api.v1.endpoints import experiences,projects,profiles,users
+
 
 app=FastAPI(title="Portfolio API",description="API for my portfolio")
+
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -45,7 +46,7 @@ async def repository_exception_handler(request:Request,exc:RepositoryError):
   content={"message":f"Internal server exception occurred:{exc}"}
  )
 @app.exception_handler(CredentialException)
-async def credential_exception_handler(reques:Request,exc:CredentialException):
+async def credential_exception_handler(request:Request,exc:CredentialException):
  return JSONResponse(
   status_code=status.HTTP_400_BAD_REQUEST,
   content={

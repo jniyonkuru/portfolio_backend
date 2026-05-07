@@ -4,7 +4,7 @@ from typing import Annotated
 import os
 from datetime import timedelta
 #resources from third part packages 
-from fastapi import APIRouter,Depends,HTTPException,status
+from fastapi import APIRouter,Depends,HTTPException,status,Body
 from fastapi.security import OAuth2PasswordRequestForm
 from dotenv import load_dotenv
 
@@ -16,11 +16,8 @@ from app.services.user_services import UserServices
 from app.utils.jwt_utils import decode_token,generate_token
 from app.utils.bcrypt_utils import verify_password
 from app.custom_errors import NotFoundException
-
-
-
-load_dotenv()
-access_token_minutes=os.environ["ACCESS_TOKEN_EXPIRE_MINUTES"]
+from app.config import app_settings
+from app.schemas import UserCreate
 router=APIRouter(
     prefix='/api/v1/users',
     tags=['users']
@@ -59,7 +56,7 @@ async def login(credentials:Credentials,user_services:Annotated[UserServices,Dep
 
        if not password_match:
               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail='Incorrect username or password ')
-       access_token_expires=timedelta(minutes=float(access_token_minutes))
+       access_token_expires=timedelta(minutes=float(app_settings.ACCESS_TOKEN_EXPIRE_MINUTES))
        token = generate_token(payload={"id":1},expires_delta=access_token_expires)
 
        return {
@@ -82,3 +79,8 @@ async def user_login(form_data:Annotated[OAuth2PasswordRequestForm,Depends()],us
       credentials=Credentials(username=form_data.username,password=form_data.password)
       token = await login(credentials=credentials,user_services=user_services)
       return token
+@router.post ("/create")
+async def create_user ( user:Annotated[UserCreate,Body()],user_services:Annotated[UserServices,Depends(UserServices)]):
+    result= await user_services.create_user(user=user)
+    return result
+

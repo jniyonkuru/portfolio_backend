@@ -1,22 +1,22 @@
-from app.schemas.schemas import ProfileCreate,ProfileUpdate
+from app.schemas.schemas import ProfileCreate,ProfileUpdate,User
 from app.repositories.base_repository import ProfileRepository
 from app.custom_errors.custom_errors import NotFoundException ,AlreadyExistException
 from app.models import ProfileDB
 
-async def create_profile_service(profile:ProfileCreate,repository:ProfileRepository):
+async def create_profile_service(profile:ProfileCreate,repository:ProfileRepository,user:User):
       
-          profile_exist= repository.get_by_attributes({"user_id":profile.user_id})
+          profile_exist= repository.get_by_attributes({"user_id":user.id})
 
           if profile_exist:
                   raise AlreadyExistException(message="Profile already exists")
-          new_profile=ProfileDB(**profile.model_dump())
+          new_profile=ProfileDB(**profile.model_dump(),user_id=user.id)
           return   repository.create(new_profile)
 
-async def edit_profile_service(id:int,profile_update:ProfileUpdate,repository:ProfileRepository):
+async def edit_profile_service(id:int,profile_update:ProfileUpdate,repository:ProfileRepository,user:User):
         
-        profile= repository.get_by_id(id=id)
+        profile= repository.get_by_attributes({"user_id":user.id})
         if not profile :
-                raise NotFoundException(message=f"Profile with id :{id} was not found")
+                raise NotFoundException(message=f"Profile of the user :{user.id} was not found")
          
         return repository.update(obj=profile_update,id=id)
 

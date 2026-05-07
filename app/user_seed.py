@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 #resources from local packages 
 from app.models.models import UserDB
 from app.utils.logger_util import logger
-from app.db.session import create_session
+from .dependencies import create_session
 from app.utils.bcrypt_utils import generate_hash
 
 load_dotenv()

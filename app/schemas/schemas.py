@@ -43,7 +43,6 @@ class UserBase(BaseModel):
     role:UserRoles=Field(description="User's role")
 
 
-
 class ExperienceBase(BaseModel):
     role:str=Field(max_length=255, description="Roles Undertaken")
     organization:str=Field(max_length=255,description="Organization name")
@@ -65,25 +64,26 @@ class ProfileBase(BaseModel):
 
 
 class ProfileCreate(ProfileBase):
-    user_id:int|None=Field(description="User's id", default=None)
+    pass
 
 class ProjectCreate(ProjectBase):
-    user_id:int|None=Field(description="User's id", default=None)
+    pass
+
 class ExperienceCreate(ExperienceBase):
-    user_id:int|None=Field(description="User's id", default=None)
+   pass
 
 class UserCreate(UserBase):
     password:str=Field(description="Password")
 
 
-class Profile(ProfileCreate,Base):
-    pass
+class Profile(ProfileBase,Base):
+    user_id: int = Field(description="User's id")
 
 class Project(ProjectCreate,Base):
-    pass
+    user_id: int = Field(description="User's id")
 
 class Experience(ExperienceCreate,Base):
-    pass
+    user_id: int = Field(description="User's id")
 
 class User(UserBase,Base):
     pass

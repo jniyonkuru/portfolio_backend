@@ -3,7 +3,6 @@ from app.services.profile_services import create_profile_service,edit_profile_se
  
 from app.dependencies import  ProfileRepoDeps
 from app.schemas import Profile,ProfileCreate
-from app.models import ProfileDB
 from typing import Annotated
 
 router=APIRouter(prefix="/api/v1/profiles",

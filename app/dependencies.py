@@ -6,17 +6,19 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 
-
-
 #resources from  local packages
 
-from app.db.db_config import engine
-from app.repositories.base_repository import ExperienceRepository,ProfileRepository,Repo,ProjectRepository,UserRepository
-from app.db.session import create_session
+from .db.db_config import engine
+from .repositories.base_repository import ExperienceRepository,ProfileRepository,Repo,ProjectRepository,UserRepository
+from .db.session import LocalSession
 
 oauth2_scheme=OAuth2PasswordBearer('token')
 
 T=TypeVar("T", bound=Repo)
+
+def create_session():
+    with LocalSession() as session:
+        yield session
 
 SessionDep = Annotated[Session, Depends(create_session)]
 

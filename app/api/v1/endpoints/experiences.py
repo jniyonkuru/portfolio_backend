@@ -2,20 +2,16 @@
 from typing import Annotated
 
 #resources from  third part packages
-from fastapi import APIRouter,Depends,Body,HTTPException,status
+from fastapi import APIRouter,Depends,Body
 
 
 #resources from local packages 
 
-from  app.dependencies import CommonDep
-from  app.dependencies import SessionDep
-from  app.models import ExperienceDB
+
 from app.schemas import ExperienceCreate,ExperienceUpdate,Experience,UserRoles,User
-from app.repositories.base_repository import ExperienceRepository
 from app.services.experience_services import create_experience_service,get_experience_by_id_service,get_list_of_experiences_service,update_experience_service,delete_experience_service
 from app.dependencies import ExperienceRepoDeps
 from app.api.v1.endpoints.users import require_role
-
 
 
 router=APIRouter(
@@ -41,12 +37,12 @@ async def get_experiences(repo:ExperienceRepoDeps):
    return await  get_list_of_experiences_service(experience_repo=repo)
 
 @router.delete("/{id}")
-async def  delete_experience (id:int,repo:ExperienceRepoDeps):
+async def  delete_experience (id:int,repo:ExperienceRepoDeps,user:Annotated[User,Depends(require_role(roles=[UserRoles.ADMIN]))]):
     return await delete_experience_service(experience_repo=repo,id=id)
 
 @router.put("/{id}")
-async def update_experience(id:int,repo:ExperienceRepoDeps,update_experience:Annotated[ExperienceUpdate,Body()]):
-    return await update_experience_service(id=id,update_experience=update_experience,experience_repo=repo)
+async def update_experience(id:int,repo:ExperienceRepoDeps,updated_experience:Annotated[ExperienceUpdate,Body()],user:Annotated[User,Depends(require_role(roles=[UserRoles.ADMIN]))]):
+    return await update_experience_service(id=id,update_experience=updated_experience,experience_repo=repo)
    
 
 

@@ -70,8 +70,8 @@ class GenericSqlRepository(GenericRepository[T]):
     def get_all(self) -> list[T]:
         try:
             statement = select(self.model).order_by(self.model.id.desc())
-            results =   self.db.execute(statement)
-            return [result for result in results.scalars().all()]
+            results =   self.db.scalars(statement).all()
+            return list(results)
         
         except (DBAPIError,SQLAlchemyError) as e:
              self.handle_errors(operation='get_all',exception=e)
@@ -134,8 +134,9 @@ class GenericSqlRepository(GenericRepository[T]):
             statement = select(self.model)
             for key, value in attributes.items():
                 statement = statement.where(getattr(self.model, key) == value)
-            results = self.db.execute(statement)
-            return [result for result in results.scalars().all()]
+            results = self.db.scalars(statement).all()
+            return list(results)
+
          except (DBAPIError,SQLAlchemyError)as e :
                self.handle_errors(operation='get_by_attributes',exception=e)
 class Repo:
@@ -150,8 +151,8 @@ class ExperienceRepository(GenericSqlRepository[ExperienceDB],Repo):
     def get_all(self) -> list[T]:
             try:
                statement = select(self.model).order_by(self.model.start_date.desc())
-               results = self.db.execute(statement)
-               return [result for result in results.scalars().all()]
+               results = self.db.scalars(statement)
+               return list(results)
             except (DBAPIError,SQLAlchemyError) as e:
                 self.handle_errors(operation='get_all',exception=e)
 
