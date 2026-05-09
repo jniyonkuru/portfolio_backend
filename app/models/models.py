@@ -45,6 +45,7 @@ class ProjectDB(BaseModel):
     title:Mapped[str]=mapped_column(String(255),nullable=False)
     description:Mapped[str]=mapped_column(String,nullable=False)
     tags:Mapped[list[str]]=mapped_column(JSON)
+    image:Mapped[str]=mapped_column(String(255),nullable=False)
     user_id:Mapped[int]=mapped_column(Integer,ForeignKey("users.id"))
     users=relationship("UserDB",back_populates="projects")
   
