@@ -15,4 +15,5 @@ def verify_password(password:bytes,hashed_password:bytes):
         password_match=bcrypt.checkpw(password=password,hashed_password=hashed_password)
         return password_match
     except Exception as e:
-     logger.error(f'error occured while verifying password :{e} ')
+        logger.error(f'error occured while verifying password :{e} ')
+        raise

@@ -1,14 +1,12 @@
 
-#resources from standard packages 
+#resources from standard packages
 from typing import Annotated
-import os
 from datetime import timedelta
-#resources from third part packages 
+#resources from third part packages
 from fastapi import APIRouter,Depends,HTTPException,status,Body
 from fastapi.security import OAuth2PasswordRequestForm
-from dotenv import load_dotenv
 
-# resources from local packages 
+# resources from local packages
 
 from app.schemas import User,Credentials,UserRoles
 from app.dependencies import oauth2_scheme
@@ -57,7 +55,7 @@ async def login(credentials:Credentials,user_services:Annotated[UserServices,Dep
        if not password_match:
               raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail='Incorrect username or password ')
        access_token_expires=timedelta(minutes=float(app_settings.ACCESS_TOKEN_EXPIRE_MINUTES))
-       token = generate_token(payload={"id":1},expires_delta=access_token_expires)
+       token = generate_token(payload={"id":user.id},expires_delta=access_token_expires)
 
        return {
               "token_type":"bearer ",

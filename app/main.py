@@ -1,7 +1,4 @@
 
-#resources from standards packages
-import os
-
 #resources from  third party packages
 
 from fastapi import HTTPException,FastAPI,Request,status
@@ -21,7 +18,7 @@ app=FastAPI(title="Portfolio API",description="API for my portfolio")
 
 app.add_middleware(CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],)
 
@@ -48,7 +45,7 @@ async def repository_exception_handler(request:Request,exc:RepositoryError):
 @app.exception_handler(CredentialException)
 async def credential_exception_handler(request:Request,exc:CredentialException):
  return JSONResponse(
-  status_code=status.HTTP_400_BAD_REQUEST,
+  status_code=status.HTTP_401_UNAUTHORIZED,
   content={
    "message":exc.message
   }

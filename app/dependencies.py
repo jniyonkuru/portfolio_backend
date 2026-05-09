@@ -26,10 +26,6 @@ def get_repo(cls:Type[T]):
     def _get_repo(session:SessionDep)->T:
           return cls(session=session)
     return _get_repo
-def common_parameters(query:str|None=None,skip:int=0,limit:int=0):
-    return {"q":query,"skip":skip,"limit":limit}
-
-CommonDep=Annotated[dict,Depends(common_parameters)]
 
 ExperienceRepoDeps=Annotated[ExperienceRepository,Depends(get_repo(ExperienceRepository))]
 ProjectRePoDeps=Annotated[ProjectRepository,Depends(get_repo(ProjectRepository))]

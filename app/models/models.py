@@ -5,7 +5,7 @@ from datetime  import date,datetime
 from pydantic import EmailStr
 from sqlalchemy.orm import DeclarativeBase ,mapped_column,Mapped,relationship
 from sqlalchemy.types import String,Integer,DateTime,JSON,LargeBinary
-from sqlalchemy import func,ForeignKey,Enum
+from sqlalchemy import func,ForeignKey
 
 # resources from local packages
 from  app.schemas import UserRoles
@@ -33,7 +33,7 @@ class ProfileDB(BaseModel):
     __tablename__="profiles"
 
     user_id:Mapped[int]=mapped_column(Integer,ForeignKey("users.id"),unique=True,nullable=False,index=True,)
-    image_url:Mapped[str]=mapped_column(String(255))
+    image_url:Mapped[str|None]=mapped_column(String(255),nullable=True)
     address:Mapped[Address]=mapped_column(JSON)
     users=relationship("UserDB",back_populates="profile")
 
@@ -42,9 +42,10 @@ class ProjectDB(BaseModel):
     __tablename__= "projects"
 
     github_url:Mapped[str]=mapped_column(String(255),unique=True,nullable=False)
-    title:Mapped[str]=mapped_column(String(255),nullable=False)
+    title:Mapped[str]=mapped_column(String(255),unique=True,nullable=False)
     description:Mapped[str]=mapped_column(String,nullable=False)
     tags:Mapped[list[str]]=mapped_column(JSON)
+    image:Mapped[str]=mapped_column(String(255),nullable=False)
     user_id:Mapped[int]=mapped_column(Integer,ForeignKey("users.id"))
     users=relationship("UserDB",back_populates="projects")
   
@@ -68,7 +69,7 @@ class UserDB(BaseModel):
     last_name:Mapped[str]=mapped_column(String(255),nullable=False)
     user_name:Mapped[str]=mapped_column(String(255),nullable=False, index=True,unique=True)
     email:Mapped[EmailStr]=mapped_column(String(255),unique=True,nullable=False,index=True)
-    role:Mapped[UserRoles]=mapped_column(String(255),Enum(UserRoles),nullable=False)
+    role:Mapped[UserRoles]=mapped_column(String(255),nullable=False)
     password:Mapped[bytes]=mapped_column(LargeBinary,nullable=False)
     projects=relationship("ProjectDB",back_populates="users")
     profile=relationship("ProfileDB",back_populates="users",uselist=False)

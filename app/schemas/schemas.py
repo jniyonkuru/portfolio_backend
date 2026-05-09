@@ -5,6 +5,7 @@ from enum import Enum
 
 #resources from third part packages 
 from pydantic import BaseModel,Field,AnyUrl,EmailStr,model_validator
+from fastapi import UploadFile
 #resources from local packages
 from app.utils.pydantic_utils import make_fields_optional
 #user roles
@@ -67,7 +68,7 @@ class ProfileCreate(ProfileBase):
     pass
 
 class ProjectCreate(ProjectBase):
-    pass
+    image: UploadFile = Field(description="Project ui image if any")
 
 class ExperienceCreate(ExperienceBase):
    pass
@@ -80,7 +81,9 @@ class Profile(ProfileBase,Base):
     user_id: int = Field(description="User's id")
 
 class Project(ProjectCreate,Base):
+    image: str = Field(description="Project ui image url")
     user_id: int = Field(description="User's id")
+   
 
 class Experience(ExperienceCreate,Base):
     user_id: int = Field(description="User's id")

@@ -9,7 +9,7 @@ async def create_profile_service(profile:ProfileCreate,repository:ProfileReposit
 
           if profile_exist:
                   raise AlreadyExistException(message="Profile already exists")
-          new_profile=ProfileDB(**profile.model_dump(),user_id=user.id)
+          new_profile=ProfileDB(**profile.model_dump(mode="json"),user_id=user.id)
           return   repository.create(new_profile)
 
 async def edit_profile_service(id:int,profile_update:ProfileUpdate,repository:ProfileRepository,user:User):

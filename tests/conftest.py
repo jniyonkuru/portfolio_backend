@@ -16,7 +16,7 @@ from app.dependencies import  create_session
 from app.config import app_settings
 
 class Settings(BaseSettings):
-    model_config=SettingsConfigDict(env_file='../../.env',env_file_encoding='utf-8',extra='ignore')
+    model_config=SettingsConfigDict(env_file=Path(__file__).resolve().parents[1] / '.env',env_file_encoding='utf-8',extra='ignore')
     TEST_DATABASE_URL:str
     BASE_URL:str
     PASSWORD:str
