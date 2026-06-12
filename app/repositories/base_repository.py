@@ -8,6 +8,7 @@ from abc import ABC,abstractmethod
 from sqlalchemy.exc import DBAPIError,SQLAlchemyError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from pydantic import AnyUrl
 
 #resources from local packages
 
@@ -100,6 +101,9 @@ class GenericSqlRepository(GenericRepository[T]):
             if hasattr(obj,"model_dump"):
             # Convert Pydantic/object to dict, excluding unset fields and id
                obj_data = obj.model_dump(exclude_unset=True, exclude={'id'})
+               # Coerce pydantic Url objects to plain strings so they bind to
+               # String columns; datetimes are left as-is for DateTime columns.
+               obj_data = {k: str(v) if isinstance(v, AnyUrl) else v for k, v in obj_data.items()}
             else:
                 obj_data =obj.dict(exclude_unset=True,exclude={'id'})
 

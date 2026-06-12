@@ -1,0 +1,94 @@
+name: CI & Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Vercel CLI reads these to target the right project/scope.
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    # Values used only to satisfy settings at import time and to run the
+    # SQLite-backed test suite. These are NOT real secrets.
+    env:
+      DATABASE_URL: sqlite:///./portfolio.db
+      ALEMBIC_URL: sqlite:///./test.db
+      TEST_DATABASE_URL: sqlite:///./test.db
+      BASE_URL: /api/v1
+      PASSWORD: ci-test-password
+      SECRET_KEY: ci-test-secret-key
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --with dev
+
+      - name: Run tests
+        run: poetry run pytest
+
+  deploy:
+    name: Deploy to Vercel
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-interaction
+
+      - name: Run database migrations
+        env:
+          # Point these at your hosted (e.g. Postgres) production database.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ALEMBIC_URL: ${{ secrets.DATABASE_URL }}
+          # Importing the app (via migrations/env.py) loads the full settings
+          # and jwt_utils at import time, so these must be present too.
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: HS256
+          ACCESS_TOKEN_EXPIRE_MINUTES: 30
+          PASSWORD: unused-at-migration-time
+          TEST_DATABASE_URL: sqlite:///./test.db
+        run: poetry run alembic upgrade head
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Install uv
+        # The @vercel/python builder uses uv to install dependencies, and it
+        # must be on PATH when `vercel build` runs on the GitHub runner.
+        uses: astral-sh/setup-uv@v6
+
+      - name: Pull Vercel environment information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build project artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
